@@ -14,8 +14,7 @@ def main():
     VC = data_loading(VC_path)
     wiki_1 = data_loading(wiki_1_path)
 
-    window_size = 3
-    co_matrix = make_co_matrix(wiki_1, V, VC, window_size=window_size)
+    co_matrix = make_co_matrix(wiki_1, V, VC, window_size=3)
 
     pmi = make_pmi(co_matrix)
 

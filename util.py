@@ -3,6 +3,9 @@ from scipy import stats
 import pandas as pd
 import random
 import os
+import warnings
+
+warnings.filterwarnings('ignore')
 
 
 def seed_everything(seed: int = 42):
@@ -52,15 +55,16 @@ def make_co_matrix(data=None, vocab_1=None, vocab_2=None, window_size=1):
     vocab_1_word_to_id, vocab_1_id_to_word = preprocess(vocab_1)
     vocab_2_word_to_id, vocab_2_id_to_word = preprocess(vocab_2)
 
-    co_matrix = np.zeros((len(vocab_1), len(vocab_2)), dtype=np.int32)
+    matrix = np.zeros((len(vocab_1), len(vocab_2)), dtype=np.int32)
 
     for text in data:
         texts = text.split(' ')
         texts.insert(0, '<s>')
         texts.append('</s>')
+
         for idx, center_word in enumerate(texts):
             if center_word in vocab_1_word_to_id and center_word in vocab_2_word_to_id:
-                co_matrix[vocab_1_word_to_id[center_word], vocab_2_word_to_id[center_word]] += 1
+                matrix[vocab_1_word_to_id[center_word], vocab_2_word_to_id[center_word]] += 1
 
             for i in range(1, window_size + 1):
                 left_idx = idx - i
@@ -71,20 +75,14 @@ def make_co_matrix(data=None, vocab_1=None, vocab_2=None, window_size=1):
                     if left_idx >= 0:
                         if texts[left_idx] in vocab_2_word_to_id:
                             left_word_id = vocab_2_word_to_id[texts[left_idx]]
-                            co_matrix[word_id, left_word_id] += 1
-                        else:
-                            continue
+                            matrix[word_id, left_word_id] += 1
 
                     if right_idx < len(texts):
                         if texts[right_idx] in vocab_2_word_to_id:
                             right_word_id = vocab_2_word_to_id[texts[right_idx]]
-                            co_matrix[word_id, right_word_id] += 1
-                        else:
-                            continue
-                else:
-                    continue
+                            matrix[word_id, right_word_id] += 1
 
-    return co_matrix
+    return matrix
 
 
 def cos_similarity(x, y, eps=1e-8):
@@ -106,6 +104,8 @@ def evaluate(data_path, matrix, vocab):
         word1_idx = word_to_id[word1]
         word2_idx = word_to_id[word2]
         cos_sim = cos_similarity(matrix[word1_idx], matrix[word2_idx])
+        if np.isnan(cos_sim):
+            cos_sim = 0.0
         sim_scores.append(cos_sim)
 
     spear_score = stats.spearmanr(scores, sim_scores)
@@ -117,25 +117,25 @@ def make_pmi(matrix, verbose=True):
     eps = 1e-8
     pmi = np.zeros_like(matrix, dtype=np.float32)
 
-    N = []
+    row = []
     for idx in range(matrix.shape[0]):
-        N.append(sum(matrix[idx]))
+        row.append(sum(matrix[idx]))
 
-    S = []
+    col = []
     for idx in range(matrix.shape[1]):
-        S.append(sum(matrix[:, idx]))
+        col.append(sum(matrix[:, idx]))
 
-    total_sum = sum(N)
-    print(total_sum)
+    total_sum = sum(row)
 
     total = matrix.shape[0] * matrix.shape[1]
     cnt = 0
 
     for i in range(matrix.shape[0]):
         for j in range(matrix.shape[1]):
-            pmi[i, j] = max(0, (matrix[i, j] * total_sum) / (S[j] * N[i]) + eps)
-            cnt += 1
+            pmi[i, j] = max(0, np.log((matrix[i, j] * total_sum) / (col[j] * row[i]) + eps))
+
             if verbose:
+                cnt += 1
                 if cnt % (total // 10) == 0:
                     print('{}% 완료'.format(100 * cnt / total))
 

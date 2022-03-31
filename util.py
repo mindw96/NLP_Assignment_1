@@ -24,31 +24,17 @@ def data_loading(path):
     return data_list
 
 
-def preprocess(text_list):
+def preprocess(vocab):
     word_to_id = {}
     id_to_word = {}
 
-    for word in text_list:
+    for word in vocab:
         if word not in word_to_id:
             new_id = len(word_to_id)
             word_to_id[word] = new_id
             id_to_word[new_id] = word
 
     return word_to_id, id_to_word
-
-
-def make_corpus(text):
-    words = text.split(' ')
-    word_to_id = {}
-
-    for word in words:
-        if word not in word_to_id:
-            new_id = len(word_to_id)
-            word_to_id[word] = new_id
-
-    corpus = np.array([word_to_id[w] for w in words])
-
-    return corpus
 
 
 def make_co_matrix(data=None, vocab_1=None, vocab_2=None, window_size=1):
@@ -92,25 +78,25 @@ def cos_similarity(x, y, eps=1e-8):
 def evaluate(data_path, matrix, vocab):
     word_to_id, id_to_word = preprocess(vocab)
     data = pd.read_table(data_path)
-    scores = []
-    sim_scores = []
 
+    spear_scores = []
     for idx in range(len(data)):
         temp = data.loc[idx]
         word1 = temp[0]
         word2 = temp[1]
         score = temp[2]
-        scores.append(score)
+
         word1_idx = word_to_id[word1]
         word2_idx = word_to_id[word2]
         cos_sim = cos_similarity(matrix[word1_idx], matrix[word2_idx])
+
         if np.isnan(cos_sim):
             cos_sim = 0.0
-        sim_scores.append(cos_sim)
 
-    spear_score = stats.spearmanr(scores, sim_scores)
+        spear_score = stats.spearmanr(score, cos_sim)
+        spear_scores.append(spear_score)
 
-    return spear_score
+    return spear_scores
 
 
 def make_pmi(matrix, verbose=True):
@@ -140,3 +126,36 @@ def make_pmi(matrix, verbose=True):
                     print('{}% 완료'.format(100 * cnt / total))
 
     return pmi
+
+
+def nearest_neighbor(words=None, vocab=None, pmi_1=None, pmi_6=None):
+    word_to_id, id_to_word = preprocess(vocab)
+
+    for word in words:
+        sim_list_1 = []
+        sim_list_6 = []
+
+        for idx in range(len(vocab)):
+            if id_to_word[idx] == word:
+                continue
+            sim_1 = cos_similarity(pmi_1[word_to_id[word]], pmi_1[idx])
+            sim_list_1.append(sim_1)
+
+            sim_6 = cos_similarity(pmi_6[word_to_id[word]], pmi_6[idx])
+            sim_list_6.append(sim_6)
+
+        print('-' * 80)
+        print('"{}" Similarity Top 10'.format(word))
+        print('Window size 1, 6')
+        for _ in range(10):
+            sim_1_max = max(sim_list_1)
+            index_1 = sim_list_1.index(sim_1_max)
+
+            sim_6_max = max(sim_list_6)
+            index_6 = sim_list_6.index(sim_6_max)
+
+            print('{:.4f} {:15} {:.4f} {:15}'.format(sim_1_max, id_to_word[index_1], sim_6_max,
+                                                                    id_to_word[index_6]))
+            sim_list_1.remove(sim_1_max)
+            sim_list_6.remove(sim_6_max)
+

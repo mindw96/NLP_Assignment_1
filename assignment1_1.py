@@ -1,7 +1,3 @@
-import math
-
-import numpy as np
-
 from util import seed_everything, data_loading, evaluate, make_co_matrix
 
 

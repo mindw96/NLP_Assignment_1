@@ -18,11 +18,11 @@ def main():
 
     pmi = make_pmi(co_matrix)
 
-    spearman_men = evaluate(men_path, pmi, V)
-    print(spearman_men)
+    spear_score_men = evaluate(men_path, pmi, V)
+    print('Spearman Score with Men: {:.4f}'.format(spear_score_men[0]))
 
-    spearman_simlex = evaluate(simlex_path, pmi, V)
-    print(spearman_simlex)
+    spear_score_simlex = evaluate(simlex_path, pmi, V)
+    print('Spearman Score with SimLex999: {:.4f}'.format(spear_score_simlex[0]))
 
 
 if __name__ == '__main__':

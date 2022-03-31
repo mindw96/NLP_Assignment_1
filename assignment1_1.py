@@ -14,13 +14,13 @@ def main():
     VC = data_loading(VC_path)
     wiki_1 = data_loading(wiki_1_path)
 
-    co_matrix = make_co_matrix(wiki_1, V, VC, window_size=6)
+    co_matrix = make_co_matrix(data=wiki_1, vocab_1=V, vocab_2=VC, window_size=3)
 
     spear_score_men = evaluate(men_path, co_matrix, V)
-    print(spear_score_men)
+    print('Spearman Score with Men: {:.4f}'.format(spear_score_men[0]))
 
     spear_score_simlex = evaluate(simlex_path, co_matrix, V)
-    print(spear_score_simlex)
+    print('Spearman Score with SimLex999: {:.4f}'.format(spear_score_simlex[0]))
 
 
 if __name__ == '__main__':

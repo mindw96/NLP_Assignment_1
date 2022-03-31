@@ -79,12 +79,14 @@ def evaluate(data_path, matrix, vocab):
     word_to_id, id_to_word = preprocess(vocab)
     data = pd.read_table(data_path)
 
-    spear_scores = []
+    sim_list = []
+    score_list = []
     for idx in range(len(data)):
         temp = data.loc[idx]
         word1 = temp[0]
         word2 = temp[1]
         score = temp[2]
+        score_list.append(score)
 
         word1_idx = word_to_id[word1]
         word2_idx = word_to_id[word2]
@@ -92,11 +94,11 @@ def evaluate(data_path, matrix, vocab):
 
         if np.isnan(cos_sim):
             cos_sim = 0.0
+        sim_list.append(cos_sim)
 
-        spear_score = stats.spearmanr(score, cos_sim)
-        spear_scores.append(spear_score)
+    spear_score = stats.spearmanr(score_list, sim_list)
 
-    return spear_scores
+    return spear_score
 
 
 def make_pmi(matrix, verbose=True):
@@ -123,7 +125,7 @@ def make_pmi(matrix, verbose=True):
             if verbose:
                 cnt += 1
                 if cnt % (total // 10) == 0:
-                    print('{}% 완료'.format(100 * cnt / total))
+                    print('{}% '.format(int(100 * cnt / total)), end='')
 
     return pmi
 
@@ -155,7 +157,6 @@ def nearest_neighbor(words=None, vocab=None, pmi_1=None, pmi_6=None):
             index_6 = sim_list_6.index(sim_6_max)
 
             print('{:.4f} {:15} {:.4f} {:15}'.format(sim_1_max, id_to_word[index_1], sim_6_max,
-                                                                    id_to_word[index_6]))
+                                                     id_to_word[index_6]))
             sim_list_1.remove(sim_1_max)
             sim_list_6.remove(sim_6_max)
-

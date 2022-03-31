@@ -16,21 +16,22 @@ def main():
 
     for window_size in [1, 3, 6]:
         print('-' * 80)
+        print('Window Size: {}'.format(window_size))
+
         co_matrix = make_co_matrix(wiki_1, V, VC, window_size=window_size)
         pmi = make_pmi(co_matrix, verbose=False)
 
         c_spear_men = evaluate(men_path, co_matrix, V)
-        print('C Spearman Score compare with MEN: {:.4f}, window_size={}'.format(c_spear_men[0], window_size))
-
-        c_spear_simlex = evaluate(simlex_path, co_matrix, V)
-        print('C Spearman Score compare with Simlex999: {:.4f}, window_size={}'.format(c_spear_simlex[0], window_size))
+        print('C Spearman Score compare with MEN: {:.4f}'.format(c_spear_men[0]))
 
         pmi_spear_men = evaluate(men_path, pmi, V)
-        print('PMI Spearman Score compare with MEN: {:.4f}, window_size={}'.format(pmi_spear_men[0], window_size))
+        print('PMI Spearman Score compare with MEN: {:.4f}'.format(pmi_spear_men[0]))
+
+        c_spear_simlex = evaluate(simlex_path, co_matrix, V)
+        print('C Spearman Score compare with Simlex999: {:.4f}'.format(c_spear_simlex[0]))
 
         pmi_spear_simlex = evaluate(simlex_path, pmi, V)
-        print('PMI Spearman Score compare with Simlex999: {:.4f}, window_size={}'.format(pmi_spear_simlex[0],
-                                                                                         window_size))
+        print('PMI Spearman Score compare with Simlex999: {:.4f}'.format(pmi_spear_simlex[0]))
 
 
 if __name__ == '__main__':

@@ -7,8 +7,8 @@ Assignment 1
 # How To Run
 1. please install numpy and pandas. 
 
->pip install numpy
->pip install pandas
+>pip install numpy  
+>pip install pandas  
 
 
 2. Run py file. 

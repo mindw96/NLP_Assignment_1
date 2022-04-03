@@ -2,6 +2,9 @@ from util import seed_everything, data_loading, make_co_matrix, evaluate, make_p
 
 
 def main():
+    print('=' * 80)
+    print('Assignment 1.2')
+
     seed_everything(9608)
 
     V_path = './data/vocab-wordsim.txt'

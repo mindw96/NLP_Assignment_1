@@ -2,6 +2,9 @@ from util import seed_everything, data_loading, make_co_matrix, make_pmi, neares
 
 
 def main():
+    print('=' * 80)
+    print('Assignment 1.4')
+
     seed_everything(9608)
 
     VC_path = './data/vocab-25k.txt'

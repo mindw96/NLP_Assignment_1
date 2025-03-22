@@ -4,7 +4,6 @@ import pandas as pd
 import random
 import os
 import warnings
-from scipy.spatial.distance import cdist
 
 warnings.filterwarnings('ignore')
 

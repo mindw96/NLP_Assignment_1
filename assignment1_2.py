@@ -22,7 +22,7 @@ def main():
     pmi = make_pmi(co_matrix)
 
     spear_score_men = evaluate(men_path, pmi, V)
-    print('Spearman Score with Men: {:.4f}'.format(spear_score_men[0]))
+    print('\nSpearman Score with Men: {:.4f}'.format(spear_score_men[0]))
 
     spear_score_simlex = evaluate(simlex_path, pmi, V)
     print('Spearman Score with SimLex999: {:.4f}'.format(spear_score_simlex[0]))

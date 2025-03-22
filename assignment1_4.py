@@ -15,11 +15,14 @@ def main():
 
     co_matrix_1 = make_co_matrix(wiki_1, VC, VC, window_size=1)
     co_matrix_6 = make_co_matrix(wiki_1, VC, VC, window_size=6)
+    print('make co matrix done.')
 
     pmi_1 = make_pmi(co_matrix_1, verbose=True)
+    print()
     pmi_6 = make_pmi(co_matrix_6, verbose=True)
+    print('\nmake pmi done.')
 
-    print('\nAssign 1.4.1')
+    print('\nAssignment 1.4.1')
     nearest_neighbor(words=['monster'], vocab=VC, pmi_1=pmi_1, pmi_6=pmi_6)
 
     print('\nAssignment 1.4.2')
@@ -29,7 +32,6 @@ def main():
     print('\nAssignment 1.4.3')
     words = ['bank', 'cell', 'apple', 'apples', 'axes', 'frame', 'light', 'well']
     nearest_neighbor(words=words, vocab=VC, pmi_1=pmi_1, pmi_6=pmi_6)
-
 
 if __name__ == '__main__':
     main()

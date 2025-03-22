@@ -54,15 +54,12 @@ def make_co_matrix(data=None, vocab_1=None, vocab_2=None, window_size=1):
             if center_word in vocab_1_word_to_id:
                 center_id = vocab_1_word_to_id[center_word]
 
-                # Check context words in the window
                 for context_pos in range(center_pos - window_size, center_pos + window_size + 1):
-                    # Skip the center word itself
                     if context_pos == center_pos:
                         continue
 
                     context_word = padded_tokens[context_pos]
 
-                    # Check if context word is in vocab_2 (column vocabulary)
                     if context_word in vocab_2_word_to_id:
                         context_id = vocab_2_word_to_id[context_word]
                         matrix[center_id, context_id] += 1
